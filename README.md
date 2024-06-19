@@ -2,6 +2,42 @@
 
 FileVault is a modern file uploading application with versions for both AWS S3 and Azure Blob Storage. It features a clean interface with light/dark mode toggle and file management capabilities.
 
+## Application Screenshots
+
+### FileVault Interface
+
+![FileVault](images/filevault.png)
+
+### Upload File to Azure Storage Account
+
+![Upload File to Azure Storage Account](images/upload-file-to-azure-storage-account.png)
+
+The upload screen allows you to select a file and enter a name for the file. Upon clicking the submit button, the file is uploaded to the Azure Blob Storage.
+
+### File Appears in Azure Storage Account
+
+![File Appears in Azure SA](images/file-appears-in-azure-sa.png)
+
+This screen shows the file successfully uploaded to the Azure Blob Storage container. The table displays the file name and its corresponding key.
+
+### Delete File
+
+![Delete File](images/delete-file.png)
+
+This screen demonstrates the delete functionality. Clicking the delete button removes the file from the cloud storage and updates the table accordingly.
+
+### File Removed from Azure Storage Account
+
+![File Removed from Azure SA](images/file-removed-from-azure-sa.png)
+
+This screen shows that the file has been successfully deleted from the Azure Blob Storage container, and the table has been updated to reflect this.
+
+### Toggle Light/Dark Mode
+
+![Toggle Light/Dark Mode](images/toggle.png)
+
+This screen shows the light mode when you slide the toggle switch.
+
 ## Features
 
 - Upload files to cloud storage (AWS S3 or Azure Blob Storage).
@@ -29,9 +65,6 @@ cd filevault
 
 ```
 filevault/
-├── .github/
-│   └── workflows/
-│       └── ci-cd.yaml
 ├── src/
 │   ├── aws-s3/
 │   │   ├── public/
@@ -55,6 +88,12 @@ filevault/
 │   │   ├── index.js
 │   │   ├── package.json
 │   │   └── package-lock.json
+├── images/
+│   ├── filevault.png
+│   ├── upload-file-to-azure-storage-account.png
+│   ├── file-appears-in-azure-sa.png
+│   ├── delete-file.png
+│   ├── file-removed-from-azure-sa.png
 ├── .gitignore
 └── README.md
 ```
