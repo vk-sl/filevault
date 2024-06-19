@@ -94,6 +94,7 @@ filevault/
 │   ├── file-appears-in-azure-sa.png
 │   ├── delete-file.png
 │   ├── file-removed-from-azure-sa.png
+|   ├── toggle.png
 ├── .gitignore
 └── README.md
 ```
