@@ -154,3 +154,13 @@ Open your browser and navigate to `http://localhost:3000`.
 - AWS S3 or Azure Storage Accounts
 - HTML, CSS, JavaScript
 
+## To-Do
+
+- [ ] **Use a Database for Persistent Data**: Replace the `filesData.json` with a database (e.g., MongoDB, PostgreSQL) to store file metadata persistently.
+
+- [ ] **User Authentication**: Implement user authentication to manage user-specific files securely.
+
+- [ ] **File Search and Filtering**: Add functionality to search and filter files in the table.
+
+- [ ] **Drag and Drop Upload**: Enhance the upload feature with drag and drop functionality.
+
