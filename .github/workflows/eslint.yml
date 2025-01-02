@@ -44,9 +44,3 @@ jobs:
           --format @microsoft/eslint-formatter-sarif
           --output-file eslint-results.sarif
         continue-on-error: true
-
-      - name: Upload analysis results to GitHub
-        uses: vk-sl/filevault/Module3@main
-        with:
-          sarif_file: eslint-results.sarif
-          wait-for-processing: true
