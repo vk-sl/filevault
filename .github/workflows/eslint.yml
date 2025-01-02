@@ -32,8 +32,8 @@ jobs:
 
       - name: Install ESLint
         run: |
-          npm install eslint@8.10.0
-          npm install @microsoft/eslint-formatter-sarif@3.1.0
+          npm install eslint
+          npm install @microsoft/eslint-formatter-sarif
 
       - name: Run ESLint
         env:
@@ -45,8 +45,3 @@ jobs:
           --output-file eslint-results.sarif
         continue-on-error: true
 
-      - name: Upload analysis results to GitHub
-        uses: vk-sl/filevault/Module3@main
-        with:
-          sarif_file: eslint-results.sarif
-          wait-for-processing: true
