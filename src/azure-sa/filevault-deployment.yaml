@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: filevault-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: filevault
+  template:
+    metadata:
+      labels:
+        app: filevault
+    spec:
+      containers:
+      - name: filevault
+        image: vkdockerregistry.azurecr.io/filevault:v1
+        ports:
+        - containerPort: 3000
+          name: open
+        env:
+        - name: port
+          value: "3000"
+      imagePullSecrets:
+       - name: azuresecret 
