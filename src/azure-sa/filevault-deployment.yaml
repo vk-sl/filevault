@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: filevault
-        image: vkdockerregistry.azurecr.io/filevault:v1
+        image: vkdockerregistry.azurecr.io/filevault:latest
         ports:
         - containerPort: 3000
           name: open
