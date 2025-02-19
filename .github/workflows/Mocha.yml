@@ -31,7 +31,7 @@ jobs:
           }' > package.json
 
       - name: Run Mocha tests
-        run: npx mocha --recursive "**/*.js" --experimental-modules --reporter json > test-results.json
+        run: npx mocha './*.js' '{!(node_modules)/**/*.js}' --experimental-modules --reporter json > test-results.json
 
       - name: Generate test report
         uses: dorny/test-reporter@v1
