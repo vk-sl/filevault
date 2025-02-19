@@ -1,0 +1,129 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '18 7 * * 2'
+  workflow_dispatch:
+
+  jobs:
+  eslint:
+    name: Run eslint scanning
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+
+      - name: Install ESLint and dependencies
+        run: |
+          npm install eslint@9.17.0
+          npm install @microsoft/eslint-formatter-sarif@3.1.0
+          npm install @eslint/migrate-config
+
+      - name: Migrate ESLint config
+        run: |
+          if [ -f .eslintrc.js ] || [ -f .eslintrc.json ] || [ -f .eslintrc.yaml ] || [ -f .eslintrc.yml ]; then
+            npx @eslint/migrate-config .eslintrc.*
+          else
+            echo "module.exports = [
+              {
+                files: ['**/*.js'],
+                rules: {
+                  'semi': 'error',
+                  'prefer-const': 'error'
+                }
+              }
+            ];" > eslint.config.js
+          fi
+
+      - name: Run ESLint
+        run: npx eslint . --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
+        continue-on-error: true
+
+      - name: Upload analysis results to GitHub
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: eslint-results.sarif
+
+    permissions:
+  pull-requests: read # allows SonarCloud to decorate PRs with analysis results
+
+jobs:
+  Analysis:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for all branches and tags
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+      - name: Analyze with SonarCloud
+        # You can pin the exact commit or the version.
+        # uses: SonarSource/sonarcloud-github-action@v2.2.0
+        uses: SonarSource/sonarcloud-github-action@4006f663ecaf1f8093e8e4abb9227f6041f52216
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}   # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
+        with:
+          # Additional arguments for the SonarScanner CLI
+          args:
+            # Unique keys of your project and organization. You can find them in SonarCloud > Information (bottom-left menu)
+            # mandatory
+            -Dsonar.projectKey=vk-sl_filevault
+            -Dsonar.organization=vk-sl
+            # Comma-separated paths to directories containing main source files.
+            #-Dsonar.sources= # optional, default is project base directory
+            # Comma-separated paths to directories containing test source files.
+            #-Dsonar.tests= # optional. For more info about Code Coverage, please refer to https://docs.sonarcloud.io/enriching/test-coverage/overview/
+            # Adds more detail to both client and server-side analysis logs, activating DEBUG mode for the scanner, and adding client-side environment variables and system properties to the server-side log of analysis report processing.
+            #-Dsonar.verbose= # optional, default is false
+          # When you need the analysis to take place in a directory other than the one from which it was launched, default is .
+          projectBaseDir: .
+
+jobs:
+  test:
+    name: Run Mocha tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+
+      - name: Install dependencies
+        run: npm install express mocha chai multer dotenv @azure/storage-blob dotenv-cli
+
+      - name: Create .env file
+        run: |
+          echo "AZURE_STORAGE_ACCOUNT_NAME=${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" > .env
+          echo "AZURE_STORAGE_ACCOUNT_KEY=${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}" >> .env
+
+      - name: Run Mocha tests
+        run: npx dotenv -e .env -- mocha "**/*.js" --ignore "node_modules/**" --ignore "**/public/**" --timeout 10000 --reporter json > test-results.json
+
+      - name: Generate test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Mocha Tests
+          path: test-results.json
+          reporter: mocha-json
+          wait-for-processing: true
