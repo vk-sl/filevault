@@ -27,7 +27,7 @@ jobs:
       - name: Create test directory and sample test
         run: |
           mkdir -p test
-          echo "const assert = require('chai').assert;
+          echo "import { assert } from 'chai';
           describe('Sample Test', function() {
             it('should return true', function() {
               assert.isTrue(true);
@@ -35,7 +35,7 @@ jobs:
           });" > test/sample.test.js
 
       - name: Run Mocha tests
-        run: npx mocha test/**/*.js --reporter json > test-results.json
+        run: NODE_OPTIONS=--experimental-vm-modules npx mocha test/**/*.js --reporter json > test-results.json
 
       - name: Generate test report
         uses: dorny/test-reporter@v1
