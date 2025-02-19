@@ -12,30 +12,16 @@ jobs:
   test:
     name: Run Mocha tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22.12.0'
+      - name: Install Mocha
+        run: npm install mocha
 
-      - name: Install dependencies
-        run: npm install express mocha chai multer dotenv @azure/storage-blob dotenv-cli
-
-      - name: Create .env file
-        run: |
-          echo "AZURE_STORAGE_ACCOUNT_NAME=${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" > .env
-          echo "AZURE_STORAGE_ACCOUNT_KEY=${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}" >> .env
-
-      - name: Run Mocha tests
-        run: timeout 1m npx dotenv -e .env -- mocha "**/*.js" --ignore "node_modules/**" --ignore "**/public/**" --timeout 10000 --reporter json > test-results.json
-
-      - name: Generate test report
-        uses: dorny/test-reporter@v1
-        if: success() || failure()
-        with:
-          name: Mocha Tests
-          path: test-results.json
-          reporter: mocha-json
+      - name: Run Mocha
+        run: npm run test --prefix src/azure-sa
