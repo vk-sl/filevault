@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'  # Using a stable LTS version
+          node-version: '20'
 
       - name: Install ESLint and dependencies
         run: |
@@ -31,25 +31,23 @@ jobs:
           npm install @microsoft/eslint-formatter-sarif@3.1.0
           npm install @eslint/migrate-config
 
-      - name: Migrate or create ESLint config
+      - name: Migrate ESLint config
         run: |
-          if [ -f .eslintrc.js ]; then
-            npx @eslint/migrate-config .eslintrc.js
-          elif [ -f .eslintrc.json ]; then
-            npx @eslint/migrate-config .eslintrc.json
-          elif [ -f .eslintrc.yaml ] || [ -f .eslintrc.yml ]; then
-            npx @eslint/migrate-config .eslintrc.yaml
+          if [ -f .eslintrc.js ] || [ -f .eslintrc.json ] || [ -f .eslintrc.yaml ] || [ -f .eslintrc.yml ]; then
+            npx @eslint/migrate-config .eslintrc.*
           else
-            echo "module.exports = {
-              extends: ['eslint:recommended'],
-              env: { node: true, es2022: true },
-              parserOptions: { ecmaVersion: 2022 }
-            };" > eslint.config.js
+            echo "module.exports = [
+              {
+                files: ['**/*.js'],
+                rules: {
+                  'semi': 'error',
+                  'prefer-const': 'error'
+                }
+              }
+            ];" > eslint.config.js
           fi
 
       - name: Run ESLint
-        env:
-          SARIF_ESLINT_IGNORE_SUPPRESSED: "true"
         run: npx eslint . --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
         continue-on-error: true
 
