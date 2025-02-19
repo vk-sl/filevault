@@ -1,3 +1,4 @@
+text
 name: Mocha Unit Tests
 
 on:
@@ -21,17 +22,11 @@ jobs:
         with:
           node-version: '22.12.0'
 
-      - name: Install Mocha and Chai
-        run: npm install mocha chai
-
-      - name: Create package.json
-        run: |
-          echo '{
-            "type": "module"
-          }' > package.json
+      - name: Install dependencies
+        run: npm install express mocha chai
 
       - name: Run Mocha tests
-        run: npx mocha "**/*.js" --ignore "node_modules/**" --experimental-modules --reporter json > test-results.json
+        run: npx mocha "**/*.js" --ignore "node_modules/**" --reporter json > test-results.json
 
       - name: Generate test report
         uses: dorny/test-reporter@v1
