@@ -12,16 +12,25 @@ jobs:
   test:
     name: Run Mocha tests
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      security-events: write
-      actions: read # only required for a private repository by github/codeql-action/upload-sarif to get the Action run status
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Mocha
-        run: npm install mocha
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
 
-      - name: Run Mocha
-        run: npm run test --prefix src/azure-sa
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Mocha tests
+        run: npx mocha --reporter json --reporter-option output=test-results.json
+
+      - name: Generate test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: Mocha Tests
+          path: test-results.json
+          reporter: mocha-json
