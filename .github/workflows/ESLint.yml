@@ -28,7 +28,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm install
           npm install eslint@9.17.0
           npm install @microsoft/eslint-formatter-sarif@3.1.0
 
