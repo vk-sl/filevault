@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+
+  filevault:
+    image: vkdockerregistry.azurecr.io/filevault:latest
+    environment:
+      - AZURE_CLIENT_ID="56420dba-aed4-4941-8dcf-820923e78845"
+      - AZURE_CLIENT_SECRET="eQR8Q~J9be2WQWylMW3soK8b~nxA6dQdus113b7A"
+      - AZURE_TENANT_ID="29dec21c-8613-4643-93cf-9654848b946f"
+    container_name: filevault
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
+    restart: unless-stopped
+    networks:
+      - loki-net
+
+networks:
+  loki-net:

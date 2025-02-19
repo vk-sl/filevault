@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+
+  filevault:
+    image: vkdockerregistry.azurecr.io/filevault:latest
+    container_name: filevault
+    ports:
+      - 3000:3000
+    expose:
+      - 3000
+    restart: unless-stopped
+    networks:
+      - loki-net
+
+networks:
+  loki-net:
