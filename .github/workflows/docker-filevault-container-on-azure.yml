@@ -1,0 +1,50 @@
+name: Build and deploy Docker Filevault app to Azure
+
+on:
+  push:
+    branches:
+      - main
+
+# CONFIGURATION
+# For help, go to https://github.com/Azure/Actions
+#
+# Set up the following secrets in your repository:
+#   AZURE_CREDENTIALS, REGISTRY_USERNAME, REGISTRY_PASSWORD, REGISTRY_URL
+# 2. Change these variables for your configuration:
+env:
+  AZURE_WEBAPP_NAME: filevaultwebapp   # set this to your application's name
+  CONTAINER_REGISTRY: vkdockerregistry.azurecr.io  # set secret with Container Registry URL, example : xyz.azurecr.io 
+# AZURE_RESOURCE_GROUP: ActionsDemo   # set this to your Azure Resource group's name - Needed only if you are provisioning the app in the workflow
+# AZURE_APP_PLAN: ActionPlan  # set this to your App service plan's name - Needed only if you are provisioning the app in the workflow
+  
+jobs:
+  build-and-deploy-to-production:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+    - uses: actions/checkout@v3
+    - name: Azure authentication
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: ACR authentication
+      uses: azure/docker-login@v1
+      with:
+        login-server: ${{ env.CONTAINER_REGISTRY }}
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}    
+    - name: Docker Build & Push to ACR
+      uses: docker/build-push-action@v3
+      with:
+        push: true
+        tags: ${{ env.CONTAINER_REGISTRY }}/filevault:${{ github.sha }}
+        context: ./src/azure-sa
+        file: ./src/azure-sa/Dockerfile
+
+
+    - name: 'Deploy to Azure Web App for Container'
+      uses: azure/webapps-deploy@v2
+      with: 
+        app-name: ${{ env.AZURE_WEBAPP_NAME }} 
+        images: ${{ env.CONTAINER_REGISTRY }}/filevault:${{ github.sha }}
+#         startup-command: 'npm start'    # Include start up command to start the app container
