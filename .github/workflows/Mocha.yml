@@ -24,6 +24,12 @@ jobs:
       - name: Install Mocha and Chai
         run: npm install mocha chai
 
+      - name: Create package.json
+        run: |
+          echo '{
+            "type": "module"
+          }' > package.json
+
       - name: Create test directory and sample test
         run: |
           mkdir -p test
@@ -35,7 +41,7 @@ jobs:
           });" > test/sample.test.js
 
       - name: Run Mocha tests
-        run: NODE_OPTIONS=--experimental-vm-modules npx mocha test/**/*.js --reporter json > test-results.json
+        run: npx mocha test/**/*.js --experimental-modules --reporter json > test-results.json
 
       - name: Generate test report
         uses: dorny/test-reporter@v1
