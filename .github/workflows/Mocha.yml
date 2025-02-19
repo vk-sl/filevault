@@ -22,8 +22,12 @@ jobs:
           node-version: '22.12.0'
 
       - name: Install dependencies
-        run: npm install express mocha chai multer dotenv @azure/storage-blob
-
+        run: npm install express mocha chai multer dotenv dotenv-cli @azure/storage-blob
+        
+      - name: Create .env file
+        run: |
+          echo "AZURE_STORAGE_ACCOUNT_NAME=${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}" > .env
+          echo "AZURE_STORAGE_ACCOUNT_KEY=${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}" >> .env
       - name: Run Mocha tests
         run: npx mocha "**/*.js" --ignore "node_modules/**" --reporter json > test-results.json
 
