@@ -22,7 +22,7 @@ jobs:
           node-version: '22.12.0'
 
       - name: Install dependencies
-        run: npm install express mocha chai multer
+        run: npm install express mocha chai multer dotenv
 
       - name: Run Mocha tests
         run: npx mocha "**/*.js" --ignore "node_modules/**" --reporter json > test-results.json
