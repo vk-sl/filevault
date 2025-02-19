@@ -1,4 +1,5 @@
-name: ESLint and Unit Tests
+
+name: ESLint
 
 on:
   push:
@@ -9,8 +10,8 @@ on:
     - cron: '18 7 * * 2'
 
 jobs:
-  eslint-and-test:
-    name: Run eslint scanning and unit tests
+  eslint:
+    name: Run eslint scanning
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -23,30 +24,33 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22.12.0'
 
-      - name: Install dependencies
+      - name: Install ESLint and dependencies
         run: |
           npm install eslint@9.17.0
           npm install @microsoft/eslint-formatter-sarif@3.1.0
-          npm install mocha chai --save-dev
+          npm install @eslint/migrate-config
 
-      - name: Create test file
+      - name: Migrate ESLint config
         run: |
-          mkdir test
-          echo "const assert = require('chai').assert;
-          describe('Sample Test', function() {
-            it('should return true', function() {
-              assert.isTrue(true);
-            });
-          });" > test/sample.test.js
+          if [ -f .eslintrc.js ] || [ -f .eslintrc.json ] || [ -f .eslintrc.yaml ] || [ -f .eslintrc.yml ]; then
+            npx @eslint/migrate-config .eslintrc.*
+          else
+            echo "module.exports = [
+              {
+                files: ['**/*.js'],
+                rules: {
+                  'semi': 'error',
+                  'prefer-const': 'error'
+                }
+              }
+            ];" > eslint.config.js
+          fi
 
       - name: Run ESLint
         run: npx eslint . --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
         continue-on-error: true
-
-      - name: Run Mocha tests
-        run: npx mocha
 
       - name: Upload analysis results to GitHub
         uses: github/codeql-action/upload-sarif@v3
