@@ -19,7 +19,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22.12.0'
 
       - name: Install Mocha and Chai
         run: npm install mocha chai
@@ -30,18 +30,8 @@ jobs:
             "type": "module"
           }' > package.json
 
-      - name: Create test directory and sample test
-        run: |
-          mkdir -p test
-          echo "import { assert } from 'chai';
-          describe('Sample Test', function() {
-            it('should return true', function() {
-              assert.isTrue(true);
-            });
-          });" > test/sample.test.js
-
       - name: Run Mocha tests
-        run: npx mocha test/**/*.js --experimental-modules --reporter json > test-results.json
+        run: npx mocha src/**/*.js --experimental-modules --reporter json > test-results.json
 
       - name: Generate test report
         uses: dorny/test-reporter@v1
