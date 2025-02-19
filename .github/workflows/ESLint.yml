@@ -4,7 +4,6 @@ on:
   push:
     branches: [ "main" ]
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ "main" ]
   schedule:
     - cron: '18 7 * * 2'
@@ -24,24 +23,34 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22.12.0'
+          node-version: '20'  # Using a stable LTS version
 
-      - name: Install dependencies
+      - name: Install ESLint and dependencies
         run: |
           npm install eslint@9.17.0
           npm install @microsoft/eslint-formatter-sarif@3.1.0
+          npm install @eslint/migrate-config
 
-      - name: Create .eslintrc.js if it doesn't exist
+      - name: Migrate or create ESLint config
         run: |
-          if [ ! -f .eslintrc.js ]; then
-            echo "module.exports = { extends: ['eslint:recommended'] };" > .eslintrc.js
+          if [ -f .eslintrc.js ]; then
+            npx @eslint/migrate-config .eslintrc.js
+          elif [ -f .eslintrc.json ]; then
+            npx @eslint/migrate-config .eslintrc.json
+          elif [ -f .eslintrc.yaml ] || [ -f .eslintrc.yml ]; then
+            npx @eslint/migrate-config .eslintrc.yaml
+          else
+            echo "module.exports = {
+              extends: ['eslint:recommended'],
+              env: { node: true, es2022: true },
+              parserOptions: { ecmaVersion: 2022 }
+            };" > eslint.config.js
           fi
 
       - name: Run ESLint
-        run: |
-          npx eslint . \
-            --format @microsoft/eslint-formatter-sarif \
-            --output-file eslint-results.sarif
+        env:
+          SARIF_ESLINT_IGNORE_SUPPRESSED: "true"
+        run: npx eslint . --format @microsoft/eslint-formatter-sarif --output-file eslint-results.sarif
         continue-on-error: true
 
       - name: Upload analysis results to GitHub
