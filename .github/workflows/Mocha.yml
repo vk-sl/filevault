@@ -30,7 +30,7 @@ jobs:
           echo "AZURE_STORAGE_ACCOUNT_KEY=${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}" >> .env
 
       - name: Run Mocha tests
-        run: npx dotenv -e .env -- mocha "**/*.js" --ignore "node_modules/**" --ignore "**/public/**" --timeout 10000 --reporter json > test-results.json
+        run: timeout 1m npx dotenv -e .env -- mocha "**/*.js" --ignore "node_modules/**" --ignore "**/public/**" --timeout 10000 --reporter json > test-results.json
 
       - name: Generate test report
         uses: dorny/test-reporter@v1
