@@ -1,4 +1,4 @@
-name: Build and deploy Filevault app to Azure App Service
+name: CD Pipeline to Azure App Service
 
 on:
   push:
