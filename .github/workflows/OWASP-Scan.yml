@@ -1,4 +1,4 @@
-name: OWASP ZAP Filevault Web App Scan
+name: OWASP ZAP Scan
 
 on:
   push:
