@@ -4,11 +4,6 @@
   vars_files:
     - vault.yml
 
-  vars:
-    dregistry: "{{ docker_registry }}"
-    dusername: "{{ docker_username }}"
-    dpassword: "{{ docker_password }}"
-
   tasks:
     - name: Install aptitude
       ansible.builtin.apt:
@@ -58,9 +53,9 @@
 
     - name: Log into private registry and force re-authorization
       docker_login:
-        registry: "{{ dregistry }}"
-        username: "{{ dusername }}"
-        password: "{{ dpassword }}"
+        registry: "{{ docker_registry }}"
+        username: "{{ docker_username }}"
+        password: "{{ docker_password }}"
         reauthorize: yes
 
     - name: Launch docker-compose
