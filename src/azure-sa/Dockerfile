@@ -13,12 +13,6 @@ FROM node:${NODE_VERSION}-alpine
 # Use production node environment by default.
 ENV NODE_ENV production
 
-#RUN useradd nodeuser
-#RUN groupadd nodegroup
-#RUN usermod -aG nodegroup nodeuser
-#RUN chgrp -R shared /uploads
-#RUN chmod -R g+rwX /uploads
-
 WORKDIR /usr/src/app
 
 
@@ -33,16 +27,11 @@ RUN --mount=type=bind,source=package.json,target=package.json \
     npm ci --omit=dev
 # npm install express multer dotenv @azure/storage-blob
 
-# Copy the rest of the source files into the image.
-#RUN chmod -R 777 ./uploads
 
 COPY . .
 
 # Expose the port that the application listens on.
 EXPOSE 3000
-
-# Run the application as a non-root user.
-#USER nodeuser
 
 # Run the application.
 CMD node index.js
